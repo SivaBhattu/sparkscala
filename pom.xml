@@ -1,0 +1,208 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.aexp.matching</groupId>
+    <artifactId>untitled</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>${project.artifactId}</name>
+    <description>Example Scala Spark App - Maven build
+        This POM has two exec goals: -
+        exec:exec@run-local - Run the code in spark local mode.
+        exec:exec@run-yarn - Run the code on yarn cluster in client mode. For this to work core-site.xml and
+        yarn-site.xml
+        must exist in the main/resources directory and point to a valid cluster.
+    </description>
+    <inceptionYear>2022</inceptionYear>
+    <repositories>
+        <repository>
+            <id>artima</id>
+            <name>Artima Maven Repository</name>
+            <url>http://repo.artima.com/releases</url>
+        </repository>
+    </repositories>
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <encoding>UTF-8</encoding>
+        <spark.version>2.4.5</spark.version>
+        <scala.version>2.11.8</scala.version>
+        <scala.compat.version>2.11</scala.compat.version>
+    </properties>
+
+    <dependencies>
+        <!-- Scala lang, spark core and spark sql are all
+             scoped as provided as spark-submit will provide these -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_${scala.compat.version}</artifactId>
+            <version>${spark.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_${scala.compat.version}</artifactId>
+            <version>${spark.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.maven/maven-plugin-api -->
+        <!-- https://mvnrepository.com/artifact/org.apache.maven/maven-core -->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.maven</groupId>-->
+<!--            <artifactId>maven-core</artifactId>-->
+<!--            <version>3.6.3</version>-->
+<!--        </dependency>-->
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.apache.maven/maven-artifact &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.maven.plugins</groupId>-->
+<!--            <artifactId>maven-clean-plugin</artifactId>-->
+<!--            <version>2.5</version>-->
+<!--        </dependency>-->
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-install-plugin &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.maven.plugins</groupId>-->
+<!--            <artifactId>maven-install-plugin</artifactId>-->
+<!--            <version>2.5</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.maven.plugins</groupId>-->
+<!--            <artifactId>maven-deploy-plugin</artifactId>-->
+<!--            <version>2.5</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.maven.plugins</groupId>-->
+<!--            <artifactId>maven-site-plugin</artifactId>-->
+<!--            <version>3.3</version>-->
+<!--        </dependency>-->
+
+
+
+
+    </dependencies>
+<build>
+    <plugins>
+        <!-- I added this plugin today to try and make it compile the Java code -->
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+                <execution>
+                    <phase>generate-sources</phase>
+                    <configuration>
+                        <sources>
+                            <source>src/main/java</source>
+                        </sources>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+
+        <!-- This compiles the Scala code -->
+        <plugin>
+            <groupId>org.scala-tools</groupId>
+            <artifactId>maven-scala-plugin</artifactId>
+            <version>2.15.2</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>compile</goal>
+                        <goal>testCompile</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+
+        <!-- This builds the fat JAR -->
+        <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+                <archive>
+                    <manifest>
+                        <mainClass>com.myorg.myproject.spark.Main</mainClass>
+                    </manifest>
+                </archive>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>make-assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+<!--    <build>-->
+<!--        <sourceDirectory>src/main/scala</sourceDirectory>-->
+<!--        <plugins>-->
+
+<!--            &lt;!&ndash; enable scalatest &ndash;&gt;-->
+<!--            &lt;!&ndash; disable surefire &ndash;&gt;-->
+<!--            &lt;!&ndash; Use the shade plugin to remove all the provided artifacts (such as spark itself) from the jar &ndash;&gt;-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-shade-plugin</artifactId>-->
+<!--                <version>3.1.1</version>-->
+<!--                <configuration>-->
+<!--                    &lt;!&ndash; Remove signed keys to prevent security exceptions on uber jar &ndash;&gt;-->
+<!--                    &lt;!&ndash; See https://stackoverflow.com/a/6743609/7245239 &ndash;&gt;-->
+<!--                    <filters>-->
+<!--                        <filter>-->
+<!--                            <artifact>*:*</artifact>-->
+<!--                            <excludes>-->
+<!--                                <exclude>META-INF/*.SF</exclude>-->
+<!--                                <exclude>META-INF/*.DSA</exclude>-->
+<!--                                <exclude>META-INF/*.RSA</exclude>-->
+<!--                            </excludes>-->
+<!--                        </filter>-->
+<!--                    </filters>-->
+<!--                    <transformers>-->
+<!--                        <transformer-->
+<!--                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
+<!--                            <mainClass>com.aexp.matching.Main</mainClass>-->
+<!--&lt;!&ndash;                            <mainfestEntries>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <Main-Class>Main</Main-Class>&ndash;&gt;-->
+<!--&lt;!&ndash;                                <Build-Number>1</Build-Number>&ndash;&gt;-->
+<!--&lt;!&ndash;                            </mainfestEntries>&ndash;&gt;-->
+<!--                        </transformer>-->
+<!--                    </transformers>-->
+<!--                    <artifactSet>-->
+<!--                        <excludes>-->
+<!--                            <exclude>javax.servlet:*</exclude>-->
+<!--                            <exclude>org.apache.hadoop:*</exclude>-->
+<!--                            <exclude>org.apache.maven.plugins:*</exclude>-->
+<!--                            <exclude>org.apache.spark:*</exclude>-->
+<!--                            <exclude>org.apache.avro:*</exclude>-->
+<!--                            <exclude>org.apache.parquet:*</exclude>-->
+<!--                            <exclude>org.scala-lang:*</exclude>-->
+<!--                        </excludes>-->
+<!--                    </artifactSet>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>shade</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </build>-->
+</project>
