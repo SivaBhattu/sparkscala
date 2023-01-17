@@ -25,7 +25,7 @@ object Main extends Serializable {
 
     data.write.save("namesAndFavColorsTable")
 
-
+// Testing git pull ignore this line.
     spark.close()
   }
 }
